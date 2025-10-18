@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Sprout, Beef, TrendingUp } from "lucide-react";
+import { Users, Sprout, Beef, TrendingUp, Stethoscope, Cloud, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -81,7 +81,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <Card className="hover:shadow-xl transition-all duration-300">
                 <CardHeader>
                   <Sprout className="h-12 w-12 text-primary mb-4" />
@@ -111,6 +111,57 @@ const Index = () => {
                   <Link to="/livestock">
                     <Button variant="outline" className="w-full">
                       View Livestock
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <Stethoscope className="h-12 w-12 text-primary mb-4" />
+                  <CardTitle>AI Crop Diagnosis</CardTitle>
+                  <CardDescription>
+                    Upload crop photos for instant AI-powered disease diagnosis and treatment recommendations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link to="/diagnosis">
+                    <Button variant="outline" className="w-full">
+                      Diagnose Crops
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <Cloud className="h-12 w-12 text-primary mb-4" />
+                  <CardTitle>Weather Forecast</CardTitle>
+                  <CardDescription>
+                    Get accurate weather predictions and farming tips to plan your agricultural activities
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link to="/weather">
+                    <Button variant="outline" className="w-full">
+                      View Forecast
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <MessageCircle className="h-12 w-12 text-primary mb-4" />
+                  <CardTitle>Farmer Community</CardTitle>
+                  <CardDescription>
+                    Connect with fellow farmers, share knowledge, and learn from collective experiences
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link to="/community">
+                    <Button variant="outline" className="w-full">
+                      Join Community
                     </Button>
                   </Link>
                 </CardContent>

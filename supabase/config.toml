@@ -1,0 +1,4 @@
+project_id = "nxdqfbddhblizfulscpr"
+
+[functions.diagnose-crop]
+verify_jwt = false

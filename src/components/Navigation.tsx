@@ -9,9 +9,13 @@ const Navigation = () => {
 
   const navLinks = [
     { path: "/", label: "Home" },
+    { path: "/diagnosis", label: "Crop Diagnosis" },
     { path: "/crops", label: "Crops" },
     { path: "/livestock", label: "Livestock" },
+    { path: "/weather", label: "Weather" },
+    { path: "/calendar", label: "Calendar" },
     { path: "/marketplace", label: "Marketplace" },
+    { path: "/community", label: "Community" },
     { path: "/blog", label: "Blog" },
     { path: "/contact", label: "Contact" },
   ];
