@@ -1,11 +1,24 @@
-import { Link, useLocation } from "react-router-dom";
-import { Sprout, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Sprout, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out successfully",
+      description: "Come back soon!",
+    });
+    navigate("/auth");
+  };
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -14,6 +27,7 @@ const Navigation = () => {
     { path: "/livestock", label: "Livestock" },
     { path: "/weather", label: "Weather" },
     { path: "/calendar", label: "Calendar" },
+    { path: "/equipment", label: "Equipment" },
     { path: "/marketplace", label: "Marketplace" },
     { path: "/community", label: "Community" },
     { path: "/blog", label: "Blog" },
@@ -44,6 +58,10 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-destructive hover:text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,6 +90,16 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
+            <button
+              onClick={() => {
+                handleSignOut();
+                setIsMenuOpen(false);
+              }}
+              className="block w-full text-left py-2 text-sm font-medium text-destructive hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4 inline mr-2" />
+              Sign Out
+            </button>
           </div>
         )}
       </div>
