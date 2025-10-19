@@ -1,12 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Sprout, Beef, TrendingUp, Stethoscope, Cloud, MessageCircle } from "lucide-react";
+import { Users, Sprout, Beef, TrendingUp, Stethoscope, Cloud, MessageCircle, LogIn } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import heroImage from "@/assets/hero-farm.jpg";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const stats = [
     { icon: Users, label: "Farmers Supported", value: "500+" },
     { icon: Sprout, label: "Crop Varieties", value: "30+" },
@@ -187,17 +203,66 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Authentication Section */}
+        {!isAuthenticated && (
+          <section className="py-20 bg-gradient-to-r from-primary via-primary/95 to-primary/90">
+            <div className="container mx-auto px-4">
+              <Card className="max-w-2xl mx-auto border-2 border-primary/20 shadow-2xl">
+                <CardHeader className="text-center space-y-4 pb-8">
+                  <LogIn className="h-16 w-16 mx-auto text-primary" />
+                  <CardTitle className="text-3xl">Join AgriFusion Community</CardTitle>
+                  <CardDescription className="text-lg">
+                    Sign in or create an account to access all features and connect with farmers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <Sprout className="h-5 w-5 text-primary" />
+                      <span className="text-sm">Crop Management</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Beef className="h-5 w-5 text-primary" />
+                      <span className="text-sm">Livestock Care</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                      <span className="text-sm">Marketplace Access</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5 text-primary" />
+                      <span className="text-sm">Community Forum</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <Link to="/auth" className="flex-1">
+                      <Button variant="default" size="lg" className="w-full">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth" className="flex-1">
+                      <Button variant="outline" size="lg" className="w-full">
+                        Create Account
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        )}
+
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-primary to-primary/90">
+        <section className="py-16 bg-gradient-to-b from-background to-primary/5">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold text-primary-foreground mb-6">
+            <h2 className="text-4xl font-bold text-foreground mb-6">
               Ready to Transform Your Farm?
             </h2>
-            <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Join hundreds of farmers who are already using AgriFusion to grow their agricultural business
             </p>
             <Link to="/contact">
-              <Button variant="secondary" size="lg" className="text-lg px-8">
+              <Button variant="default" size="lg" className="text-lg px-8">
                 Get Started Today
               </Button>
             </Link>
