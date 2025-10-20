@@ -9,6 +9,14 @@ import irrigationImg from "@/assets/equipment-irrigation.jpg";
 import milkingImg from "@/assets/equipment-milking.jpg";
 import ploughImg from "@/assets/product-plough.jpg";
 import sprinklerImg from "@/assets/product-sprinkler.jpg";
+import seedDrillImg from "@/assets/equipment-seed-drill.jpg";
+import balerImg from "@/assets/equipment-baler.jpg";
+import mowerImg from "@/assets/equipment-mower.jpg";
+import manureSpreaderImg from "@/assets/equipment-manure-spreader.jpg";
+import sprayerImg from "@/assets/equipment-sprayer.jpg";
+import forageHarvesterImg from "@/assets/equipment-forage-harvester.jpg";
+import incubatorImg from "@/assets/equipment-incubator.jpg";
+import feedMixerImg from "@/assets/equipment-feed-mixer.jpg";
 
 const Equipment = () => {
   const equipment = [
@@ -48,6 +56,7 @@ const Equipment = () => {
     {
       name: "Seed Drill",
       category: "Planting",
+      image: seedDrillImg,
       use: "Planting seeds in rows at consistent depth and spacing",
       maintenance: "Clean seed boxes daily, calibrate spacing annually, lubricate chains weekly",
     },
@@ -60,6 +69,7 @@ const Equipment = () => {
     {
       name: "Sprayer",
       category: "Crop Protection",
+      image: sprayerImg,
       use: "Applying pesticides, herbicides, and fertilizers evenly",
       maintenance: "Flush system after each use, replace nozzles seasonally, check pressure gauges",
     },
@@ -85,12 +95,14 @@ const Equipment = () => {
     {
       name: "Baler",
       category: "Harvesting",
+      image: balerImg,
       use: "Compressing and bundling hay or straw into bales",
       maintenance: "Grease bearings after every 10 bales, tighten belts, clean pickup teeth",
     },
     {
       name: "Mower",
       category: "Cutting",
+      image: mowerImg,
       use: "Cutting grass, hay, or crops close to the ground",
       maintenance: "Sharpen blades before season, clean deck after use, check belt tension",
     },
@@ -109,6 +121,7 @@ const Equipment = () => {
     {
       name: "Manure Spreader",
       category: "Fertilization",
+      image: manureSpreaderImg,
       use: "Distributing manure evenly across fields as fertilizer",
       maintenance: "Clean beater bars after use, oil chains, check PTO shaft alignment",
     },
@@ -121,6 +134,7 @@ const Equipment = () => {
     {
       name: "Forage Harvester",
       category: "Harvesting",
+      image: forageHarvesterImg,
       use: "Chopping green plants for silage production",
       maintenance: "Sharpen knives regularly, clean chute daily, inspect belts weekly",
     },
@@ -164,6 +178,7 @@ const Equipment = () => {
     {
       name: "Incubator",
       category: "Poultry",
+      image: incubatorImg,
       use: "Hatching eggs under controlled temperature and humidity",
       maintenance: "Calibrate thermostat monthly, clean trays after each batch, check humidity sensors",
     },
@@ -176,6 +191,7 @@ const Equipment = () => {
     {
       name: "Feed Mixer",
       category: "Livestock",
+      image: feedMixerImg,
       use: "Mixing different feed ingredients uniformly",
       maintenance: "Clean augers after use, check motor brushes, inspect blades for wear",
     },
