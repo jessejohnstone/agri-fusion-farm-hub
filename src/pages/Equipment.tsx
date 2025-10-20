@@ -3,24 +3,33 @@ import { Badge } from "@/components/ui/badge";
 import { Wrench, Settings } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import tractorImg from "@/assets/equipment-tractor.jpg";
+import harvesterImg from "@/assets/equipment-harvester.jpg";
+import irrigationImg from "@/assets/equipment-irrigation.jpg";
+import milkingImg from "@/assets/equipment-milking.jpg";
+import ploughImg from "@/assets/product-plough.jpg";
+import sprinklerImg from "@/assets/product-sprinkler.jpg";
 
 const Equipment = () => {
   const equipment = [
     {
       name: "Tractor",
       category: "Heavy Machinery",
+      image: tractorImg,
       use: "Plowing, tilling, and hauling heavy loads across the farm",
       maintenance: "Regular oil changes, tire pressure checks, and engine tune-ups every 100 hours of operation",
     },
     {
       name: "Combine Harvester",
       category: "Harvesting",
+      image: harvesterImg,
       use: "Harvesting grain crops like wheat, corn, and barley efficiently",
       maintenance: "Clean grain tanks daily, sharpen blades weekly, lubricate moving parts after each use",
     },
     {
       name: "Plow",
       category: "Tillage",
+      image: ploughImg,
       use: "Breaking and turning over soil to prepare for planting",
       maintenance: "Clean after use, sharpen blades annually, check bolt tightness before each season",
     },
@@ -69,6 +78,7 @@ const Equipment = () => {
     {
       name: "Sprinkler System",
       category: "Irrigation",
+      image: irrigationImg,
       use: "Distributing water over large areas evenly",
       maintenance: "Clean sprinkler heads monthly, check for leaks, winterize in cold seasons",
     },
@@ -141,6 +151,7 @@ const Equipment = () => {
     {
       name: "Milking Machine",
       category: "Dairy",
+      image: milkingImg,
       use: "Automated milking of dairy cattle efficiently",
       maintenance: "Sanitize after each use, replace rubber parts quarterly, check vacuum pressure",
     },
@@ -224,7 +235,16 @@ const Equipment = () => {
             {/* Equipment Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {equipment.map((item) => (
-                <Card key={item.name} className="hover:shadow-xl transition-all duration-300">
+                <Card key={item.name} className="hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  {item.image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <CardTitle className="text-xl">{item.name}</CardTitle>
