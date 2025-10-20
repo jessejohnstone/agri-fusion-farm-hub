@@ -157,8 +157,8 @@ const Livestock = () => {
                       <iframe
                         width="100%"
                         height="100%"
-                        src="https://www.youtube.com/embed/8ScPn2Q_Ek0"
-                        title="How to Make Compost Manure"
+                        src="https://www.youtube.com/embed/qHcz2VF7CIs"
+                        title="Creating Compost with Cow Manure"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -183,8 +183,8 @@ const Livestock = () => {
                       <iframe
                         width="100%"
                         height="100%"
-                        src="https://www.youtube.com/embed/gJLhZrN2TD8"
-                        title="How to Make Silage"
+                        src="https://www.youtube.com/embed/R_ipFmFFz7k"
+                        title="How to Make the Best Maize Silage - Process A-Z"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
