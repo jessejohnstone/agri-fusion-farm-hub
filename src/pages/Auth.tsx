@@ -39,8 +39,10 @@ const Auth = () => {
     const email = formData.get("signup-email") as string;
     const password = formData.get("signup-password") as string;
     const fullName = formData.get("full-name") as string;
+    const county = formData.get("county") as string;
+    const phone = formData.get("phone") as string;
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -50,6 +52,22 @@ const Auth = () => {
         emailRedirectTo: `${window.location.origin}/`,
       },
     });
+
+    if (!error && data.user) {
+      // Update profile with additional information
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ 
+          location: county,
+          phone: phone,
+          full_name: fullName
+        })
+        .eq("user_id", data.user.id);
+
+      if (profileError) {
+        console.error("Profile update error:", profileError);
+      }
+    }
 
     setLoading(false);
 
@@ -156,6 +174,37 @@ const Auth = () => {
                     placeholder="farmer@example.com"
                     required
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+254-712-345-678"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="county">County</Label>
+                  <select
+                    id="county"
+                    name="county"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    required
+                  >
+                    <option value="">Select your county</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Kiambu">Kiambu</option>
+                    <option value="Nakuru">Nakuru</option>
+                    <option value="Uasin Gishu">Uasin Gishu</option>
+                    <option value="Meru">Meru</option>
+                    <option value="Kakamega">Kakamega</option>
+                    <option value="Kisumu">Kisumu</option>
+                    <option value="Machakos">Machakos</option>
+                    <option value="Nyeri">Nyeri</option>
+                    <option value="Bungoma">Bungoma</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>

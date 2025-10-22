@@ -17,6 +17,7 @@ import Community from "./pages/Community";
 import FarmingCalendar from "./pages/FarmingCalendar";
 import VetServices from "./pages/VetServices";
 import Equipment from "./pages/Equipment";
+import EquipmentUpload from "./pages/EquipmentUpload";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/calendar" element={<ProtectedRoute><FarmingCalendar /></ProtectedRoute>} />
           <Route path="/vet-services" element={<ProtectedRoute><VetServices /></ProtectedRoute>} />
           <Route path="/equipment" element={<ProtectedRoute><Equipment /></ProtectedRoute>} />
+          <Route path="/equipment-upload" element={<ProtectedRoute><EquipmentUpload /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      farm_equipment_uploads: {
+        Row: {
+          contact_phone: string | null
+          county: string
+          created_at: string
+          description: string | null
+          equipment_name: string
+          equipment_type: string
+          id: string
+          image_url: string
+          price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_phone?: string | null
+          county: string
+          created_at?: string
+          description?: string | null
+          equipment_name: string
+          equipment_type: string
+          id?: string
+          image_url: string
+          price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_phone?: string | null
+          county?: string
+          created_at?: string
+          description?: string | null
+          equipment_name?: string
+          equipment_type?: string
+          id?: string
+          image_url?: string
+          price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -44,6 +86,48 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vet_services: {
+        Row: {
+          available: boolean | null
+          county: string
+          created_at: string
+          email: string | null
+          id: string
+          location: string
+          name: string
+          phone: string
+          rating: number | null
+          specialty: string
+          years_experience: number | null
+        }
+        Insert: {
+          available?: boolean | null
+          county: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          location: string
+          name: string
+          phone: string
+          rating?: number | null
+          specialty: string
+          years_experience?: number | null
+        }
+        Update: {
+          available?: boolean | null
+          county?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          location?: string
+          name?: string
+          phone?: string
+          rating?: number | null
+          specialty?: string
+          years_experience?: number | null
         }
         Relationships: []
       }

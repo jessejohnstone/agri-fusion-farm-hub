@@ -1,10 +1,69 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, MapPin, Clock, Star, Stethoscope, Syringe, HeartPulse, Pill } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Phone, MapPin, Star, Stethoscope, Syringe, HeartPulse, Pill, Mail } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const VetServices = () => {
+  const [userCounty, setUserCounty] = useState<string | null>(null);
+  const [vets, setVets] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUserCountyAndVets = async () => {
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          // Fetch user's county from profile
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("location")
+            .eq("user_id", user.id)
+            .single();
+
+          if (profile?.location) {
+            setUserCounty(profile.location);
+            
+            // Fetch vet services for user's county
+            const { data: vetData, error } = await supabase
+              .from("vet_services")
+              .select("*")
+              .eq("county", profile.location)
+              .eq("available", true)
+              .order("rating", { ascending: false });
+
+            if (error) throw error;
+            setVets(vetData || []);
+          } else {
+            toast({
+              title: "County not set",
+              description: "Please update your profile with your county information.",
+              variant: "destructive",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load veterinary services.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserCountyAndVets();
+  }, [toast]);
+
   const services = [
     {
       icon: <Stethoscope className="h-8 w-8" />,
@@ -32,40 +91,19 @@ const VetServices = () => {
     },
   ];
 
-  const vets = [
-    {
-      name: "Dr. James Mwangi",
-      specialty: "Large Animals (Cattle, Goats)",
-      location: "Nairobi, Kenya",
-      phone: "+254 712 345 678",
-      rating: 4.8,
-      experience: "15 years experience",
-    },
-    {
-      name: "Dr. Sarah Kamau",
-      specialty: "Poultry & Small Animals",
-      location: "Nakuru, Kenya",
-      phone: "+254 723 456 789",
-      rating: 4.9,
-      experience: "12 years experience",
-    },
-    {
-      name: "Dr. Peter Ochieng",
-      specialty: "General Veterinary Practice",
-      location: "Kisumu, Kenya",
-      phone: "+254 734 567 890",
-      rating: 4.7,
-      experience: "10 years experience",
-    },
-    {
-      name: "Dr. Mary Wanjiru",
-      specialty: "Emergency & Critical Care",
-      location: "Mombasa, Kenya",
-      phone: "+254 745 678 901",
-      rating: 4.9,
-      experience: "18 years experience",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navigation />
+        <main className="flex-grow container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -78,9 +116,15 @@ const VetServices = () => {
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                 Veterinary Services
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Professional veterinary care for your livestock - from routine check-ups to emergency services
+              <p className="text-lg text-muted-foreground mb-4">
+                Professional veterinary care for your livestock in {userCounty || "your area"}
               </p>
+              {userCounty && (
+                <Badge variant="outline" className="text-base">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  Showing services in {userCounty} County
+                </Badge>
+              )}
             </div>
 
             {/* Services Section */}
@@ -109,47 +153,67 @@ const VetServices = () => {
             {/* Available Vets Section */}
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-                Available Veterinarians
+                Available Veterinarians in {userCounty || "Your County"}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {vets.map((vet) => (
-                  <Card key={vet.name} className="hover:shadow-xl transition-all duration-300">
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{vet.name}</span>
-                        <span className="flex items-center text-sm text-warning">
-                          <Star className="h-4 w-4 fill-current mr-1" />
-                          {vet.rating}
-                        </span>
-                      </CardTitle>
-                      <CardDescription>{vet.specialty}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4 text-primary" />
-                        <span>{vet.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4 text-primary" />
-                        <span>{vet.experience}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="h-4 w-4 text-primary" />
-                        <span>{vet.phone}</span>
-                      </div>
-                      <div className="flex gap-2 mt-4">
-                        <Button variant="default" className="flex-1">
-                          <Phone className="mr-2 h-4 w-4" />
-                          Call Now
-                        </Button>
-                        <Button variant="outline" className="flex-1">
-                          Book Appointment
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              {vets.length === 0 ? (
+                <Card className="max-w-md mx-auto">
+                  <CardContent className="pt-6 text-center">
+                    <p className="text-muted-foreground">
+                      No veterinary services found in {userCounty || "your county"}. Please check back later or contact us for assistance.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {vets.map((vet) => (
+                    <Card key={vet.id} className="hover:shadow-xl transition-all duration-300">
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{vet.name}</span>
+                          <span className="flex items-center text-sm text-warning">
+                            <Star className="h-4 w-4 fill-current mr-1" />
+                            {vet.rating}
+                          </span>
+                        </CardTitle>
+                        <CardDescription>{vet.specialty}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4 text-primary" />
+                          <span>{vet.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Phone className="h-4 w-4 text-primary" />
+                          <a href={`tel:${vet.phone}`} className="hover:underline">
+                            {vet.phone}
+                          </a>
+                        </div>
+                        {vet.email && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Mail className="h-4 w-4 text-primary" />
+                            <a href={`mailto:${vet.email}`} className="hover:underline">
+                              {vet.email}
+                            </a>
+                          </div>
+                        )}
+                        <div className="text-sm text-muted-foreground">
+                          Experience: {vet.years_experience} years
+                        </div>
+                        <div className="flex gap-2 mt-4">
+                          <Button 
+                            variant="default" 
+                            className="flex-1"
+                            onClick={() => window.location.href = `tel:${vet.phone}`}
+                          >
+                            <Phone className="mr-2 h-4 w-4" />
+                            Call Now
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
