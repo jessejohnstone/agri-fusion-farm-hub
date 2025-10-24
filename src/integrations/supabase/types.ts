@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      equipment_blockchain: {
+        Row: {
+          block_hash: string
+          created_at: string
+          equipment_id: string
+          event_data: Json
+          event_type: string
+          id: string
+          previous_hash: string | null
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          block_hash: string
+          created_at?: string
+          equipment_id: string
+          event_data: Json
+          event_type: string
+          id?: string
+          previous_hash?: string | null
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          block_hash?: string
+          created_at?: string
+          equipment_id?: string
+          event_data?: Json
+          event_type?: string
+          id?: string
+          previous_hash?: string | null
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_blockchain_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "farm_equipment_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       farm_equipment_uploads: {
         Row: {
           contact_phone: string | null
@@ -89,6 +133,114 @@ export type Database = {
         }
         Relationships: []
       }
+      supply_chain_records: {
+        Row: {
+          batch_id: string
+          chain_hash: string
+          county: string
+          created_at: string
+          id: string
+          location: string
+          metadata: Json | null
+          previous_hash: string | null
+          product_name: string
+          product_type: string
+          stage: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          batch_id: string
+          chain_hash: string
+          county: string
+          created_at?: string
+          id?: string
+          location: string
+          metadata?: Json | null
+          previous_hash?: string | null
+          product_name: string
+          product_type: string
+          stage: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          batch_id?: string
+          chain_hash?: string
+          county?: string
+          created_at?: string
+          id?: string
+          location?: string
+          metadata?: Json | null
+          previous_hash?: string | null
+          product_name?: string
+          product_type?: string
+          stage?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      token_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          reason: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_tokens: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_earned: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vet_services: {
         Row: {
           available: boolean | null
@@ -136,7 +288,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      award_tokens: {
+        Args: {
+          p_amount: number
+          p_metadata?: Json
+          p_reason: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      generate_block_hash: {
+        Args: {
+          p_equipment_id: string
+          p_event_data: Json
+          p_event_type: string
+          p_previous_hash: string
+          p_timestamp: string
+        }
+        Returns: string
+      }
+      generate_chain_hash: {
+        Args: {
+          p_batch_id: string
+          p_metadata: Json
+          p_previous_hash: string
+          p_stage: string
+          p_timestamp: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
