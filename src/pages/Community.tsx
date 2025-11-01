@@ -68,6 +68,40 @@ const Community = () => {
 
   useEffect(() => {
     fetchMachineryHireListings();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('machinery-hire-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'machinery_hire'
+        },
+        (payload) => {
+          console.log('Realtime event:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            setMachineryHireListings((prev) => [payload.new as any, ...prev]);
+          } else if (payload.eventType === 'UPDATE') {
+            setMachineryHireListings((prev) =>
+              prev.map((listing) =>
+                listing.id === (payload.new as any).id ? (payload.new as any) : listing
+              )
+            );
+          } else if (payload.eventType === 'DELETE') {
+            setMachineryHireListings((prev) =>
+              prev.filter((listing) => listing.id !== (payload.old as any).id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchMachineryHireListings = async () => {
@@ -147,7 +181,7 @@ const Community = () => {
         county: "",
         contact_phone: "",
       });
-      fetchMachineryHireListings();
+      // No need to manually refresh - realtime will handle it
     }
   };
 
