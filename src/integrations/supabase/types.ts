@@ -100,6 +100,57 @@ export type Database = {
         }
         Relationships: []
       }
+      machinery_hire: {
+        Row: {
+          available: boolean
+          contact_phone: string | null
+          county: string
+          created_at: string
+          daily_rate: number | null
+          description: string | null
+          hourly_rate: number
+          id: string
+          image_url: string | null
+          location: string
+          machinery_name: string
+          machinery_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available?: boolean
+          contact_phone?: string | null
+          county: string
+          created_at?: string
+          daily_rate?: number | null
+          description?: string | null
+          hourly_rate: number
+          id?: string
+          image_url?: string | null
+          location: string
+          machinery_name: string
+          machinery_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available?: boolean
+          contact_phone?: string | null
+          county?: string
+          created_at?: string
+          daily_rate?: number | null
+          description?: string | null
+          hourly_rate?: number
+          id?: string
+          image_url?: string | null
+          location?: string
+          machinery_name?: string
+          machinery_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
