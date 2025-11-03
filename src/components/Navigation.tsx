@@ -23,6 +23,7 @@ const Navigation = () => {
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/diagnosis", label: "Crop Diagnosis" },
+    { path: "/soil", label: "Soil" },
     { path: "/crops", label: "Crops" },
     { path: "/livestock", label: "Livestock" },
     { path: "/weather", label: "Weather" },

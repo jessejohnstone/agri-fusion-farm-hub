@@ -12,6 +12,7 @@ import Marketplace from "./pages/Marketplace";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import CropDiagnosis from "./pages/CropDiagnosis";
+import Soil from "./pages/Soil";
 import Weather from "./pages/Weather";
 import Community from "./pages/Community";
 import FarmingCalendar from "./pages/FarmingCalendar";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
           <Route path="/diagnosis" element={<ProtectedRoute><CropDiagnosis /></ProtectedRoute>} />
+          <Route path="/soil" element={<ProtectedRoute><Soil /></ProtectedRoute>} />
           <Route path="/weather" element={<ProtectedRoute><Weather /></ProtectedRoute>} />
           <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><FarmingCalendar /></ProtectedRoute>} />

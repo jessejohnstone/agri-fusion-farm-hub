@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Sprout, Beef, TrendingUp, Stethoscope, Cloud, MessageCircle, LogIn } from "lucide-react";
+import { Users, Sprout, Beef, TrendingUp, Stethoscope, Cloud, MessageCircle, LogIn, Mountain } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -144,6 +144,23 @@ const Index = () => {
                   <Link to="/diagnosis">
                     <Button variant="outline" className="w-full">
                       Diagnose Crops
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <Mountain className="h-12 w-12 text-primary mb-4" />
+                  <CardTitle>Soil Management</CardTitle>
+                  <CardDescription>
+                    Learn about soil types, testing, amendments, and conservation practices for optimal farming
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link to="/soil">
+                    <Button variant="outline" className="w-full">
+                      View Soil Guide
                     </Button>
                   </Link>
                 </CardContent>
