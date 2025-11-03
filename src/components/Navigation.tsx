@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Sprout, Menu, X, LogOut } from "lucide-react";
+import { Sprout, Menu, X, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,6 +59,12 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/profile" className={isActive("/profile") ? "text-primary" : ""}>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Link>
+            </Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-destructive hover:text-destructive">
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
@@ -91,6 +97,16 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
+            <Link
+              to="/profile"
+              onClick={() => setIsMenuOpen(false)}
+              className={`block py-2 text-sm font-medium transition-colors hover:text-primary ${
+                isActive("/profile") ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              <User className="h-4 w-4 inline mr-2" />
+              Profile
+            </Link>
             <button
               onClick={() => {
                 handleSignOut();

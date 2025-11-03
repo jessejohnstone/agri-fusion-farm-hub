@@ -153,6 +153,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          county: string | null
           created_at: string
           farm_type: string | null
           full_name: string | null
@@ -163,6 +164,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          county?: string | null
           created_at?: string
           farm_type?: string | null
           full_name?: string | null
@@ -173,6 +175,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          county?: string | null
           created_at?: string
           farm_type?: string | null
           full_name?: string | null
