@@ -45,26 +45,19 @@ const Weather = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-weather`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            lat,
-            lon,
-            location: locationName,
-          }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('fetch-weather', {
+        body: {
+          lat,
+          lon,
+          location: locationName,
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch weather data');
+      if (error) {
+        throw new Error(error.message || 'Failed to fetch weather data');
       }
 
-      const { current: currentData, forecast: forecastData } = await response.json();
+      const { current: currentData, forecast: forecastData } = data as any;
 
       setLocationName(currentData.name || "Current Location");
 
