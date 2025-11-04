@@ -40,25 +40,31 @@ const Weather = () => {
     return Sun;
   };
 
-  const fetchWeather = async (lat: number, lon: number) => {
+  const fetchWeather = async (lat?: number, lon?: number, locationName?: string) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Using OpenWeatherMap API (free tier)
-      const API_KEY = 'bd5e378503939ddaee76f12ad7a97608'; // Public demo key for testing
-      
-      // Fetch current weather
-      const currentResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-weather`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lat,
+            lon,
+            location: locationName,
+          }),
+        }
       );
-      const currentData = await currentResponse.json();
 
-      // Fetch 5-day forecast
-      const forecastResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-      );
-      const forecastData = await forecastResponse.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch weather data');
+      }
+
+      const { current: currentData, forecast: forecastData } = await response.json();
 
       setLocationName(currentData.name || "Current Location");
 
@@ -67,16 +73,16 @@ const Weather = () => {
         temp: Math.round(currentData.main.temp),
         condition: currentData.weather[0].main,
         humidity: currentData.main.humidity,
-        wind: Math.round(currentData.wind.speed * 3.6), // Convert m/s to km/h
+        wind: Math.round(currentData.wind.speed * 3.6),
         icon: currentData.weather[0].icon,
       });
 
-      // Process forecast data (get one forecast per day)
+      // Process forecast data
       const dailyForecasts: ForecastDay[] = [];
       const days = ['Today', 'Tomorrow', 'Day 3', 'Day 4', 'Day 5'];
       
       for (let i = 0; i < 5; i++) {
-        const index = i * 8; // Get data for every 24 hours (8 * 3-hour intervals)
+        const index = i * 8;
         if (forecastData.list[index]) {
           const item = forecastData.list[index];
           dailyForecasts.push({
@@ -100,26 +106,7 @@ const Weather = () => {
   };
 
   const fetchWeatherByLocation = async (locationName: string) => {
-    try {
-      const API_KEY = 'bd5e378503939ddaee76f12ad7a97608';
-      
-      // Geocode the location name to get coordinates
-      const geocodeResponse = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(locationName)},KE&limit=1&appid=${API_KEY}`
-      );
-      const geocodeData = await geocodeResponse.json();
-      
-      if (geocodeData && geocodeData.length > 0) {
-        const { lat, lon } = geocodeData[0];
-        await fetchWeather(lat, lon);
-      } else {
-        // Fallback to Nairobi
-        await fetchWeather(-1.2921, 36.8219);
-      }
-    } catch (error) {
-      console.error("Error geocoding location:", error);
-      await fetchWeather(-1.2921, 36.8219);
-    }
+    await fetchWeather(undefined, undefined, locationName);
   };
 
   const loadUserLocation = async () => {
