@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WeatherData {
   location: string;
@@ -98,6 +99,55 @@ const Weather = () => {
     }
   };
 
+  const fetchWeatherByLocation = async (locationName: string) => {
+    try {
+      const API_KEY = 'bd5e378503939ddaee76f12ad7a97608';
+      
+      // Geocode the location name to get coordinates
+      const geocodeResponse = await fetch(
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(locationName)},KE&limit=1&appid=${API_KEY}`
+      );
+      const geocodeData = await geocodeResponse.json();
+      
+      if (geocodeData && geocodeData.length > 0) {
+        const { lat, lon } = geocodeData[0];
+        await fetchWeather(lat, lon);
+      } else {
+        // Fallback to Nairobi
+        await fetchWeather(-1.2921, 36.8219);
+      }
+    } catch (error) {
+      console.error("Error geocoding location:", error);
+      await fetchWeather(-1.2921, 36.8219);
+    }
+  };
+
+  const loadUserLocation = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("county, location")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        
+        if (profile && (profile.county || profile.location)) {
+          const locationToUse = profile.location || profile.county;
+          setLocationName(locationToUse);
+          await fetchWeatherByLocation(locationToUse);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Error loading user location:", error);
+    }
+    
+    // Fallback to geolocation or Nairobi
+    getCurrentLocation();
+  };
+
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -116,7 +166,7 @@ const Weather = () => {
   };
 
   useEffect(() => {
-    getCurrentLocation();
+    loadUserLocation();
   }, []);
 
   const farmingTips = [

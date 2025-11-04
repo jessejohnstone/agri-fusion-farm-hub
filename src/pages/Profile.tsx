@@ -95,15 +95,15 @@ const Profile = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .upsert({
-          user_id: user.id,
+        .update({
           full_name: formData.full_name,
           phone: formData.phone,
           county: formData.county,
           location: formData.location,
           farm_type: formData.farm_type,
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
