@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ShoppingBag, ShoppingCart } from "lucide-react";
+import { Search, ShoppingBag, ShoppingCart, Star } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,8 @@ interface Product {
   image_url: string | null;
   stock_quantity: number;
   available: boolean;
+  rating?: number;
+  review_count?: number;
 }
 
 const Marketplace = () => {
@@ -44,7 +46,28 @@ const Marketplace = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+
+      // Fetch ratings for each product
+      const productsWithRatings = await Promise.all(
+        (data || []).map(async (product) => {
+          const { data: reviews } = await supabase
+            .from("product_reviews")
+            .select("rating")
+            .eq("product_id", product.id);
+
+          const rating = reviews && reviews.length > 0
+            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            : 0;
+
+          return {
+            ...product,
+            rating,
+            review_count: reviews?.length || 0,
+          };
+        })
+      );
+
+      setProducts(productsWithRatings);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -142,6 +165,17 @@ const Marketplace = () => {
                           <div className="w-full h-full flex items-center justify-center bg-muted">
                             <ShoppingBag className="h-12 w-12 text-muted-foreground" />
                           </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 mb-2">
+                        {product.rating && product.rating > 0 ? (
+                          <>
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-medium">{product.rating.toFixed(1)}</span>
+                            <span className="text-sm text-muted-foreground">({product.review_count})</span>
+                          </>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">No reviews yet</span>
                         )}
                       </div>
                       <p className="text-2xl font-bold text-primary mb-1">

@@ -11,6 +11,8 @@ import Livestock from "./pages/Livestock";
 import Marketplace from "./pages/Marketplace";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import SellerDashboard from "./pages/SellerDashboard";
+import OrderHistory from "./pages/OrderHistory";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import CropDiagnosis from "./pages/CropDiagnosis";
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/seller-dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
+          <Route path="/order-history" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
           <Route path="/diagnosis" element={<ProtectedRoute><CropDiagnosis /></ProtectedRoute>} />
