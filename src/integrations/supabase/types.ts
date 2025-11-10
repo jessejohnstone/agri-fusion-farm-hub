@@ -246,6 +246,7 @@ export type Database = {
           product_name: string
           quantity: number
           seller_id: string
+          status: string | null
           subtotal: number
           unit_price: number
         }
@@ -257,6 +258,7 @@ export type Database = {
           product_name: string
           quantity: number
           seller_id: string
+          status?: string | null
           subtotal: number
           unit_price: number
         }
@@ -268,6 +270,7 @@ export type Database = {
           product_name?: string
           quantity?: number
           seller_id?: string
+          status?: string | null
           subtotal?: number
           unit_price?: number
         }
@@ -296,6 +299,7 @@ export type Database = {
           created_at: string
           delivery_address: string
           delivery_phone: string
+          delivery_status: string | null
           id: string
           notes: string | null
           status: string
@@ -309,6 +313,7 @@ export type Database = {
           created_at?: string
           delivery_address: string
           delivery_phone: string
+          delivery_status?: string | null
           id?: string
           notes?: string | null
           status?: string
@@ -322,6 +327,7 @@ export type Database = {
           created_at?: string
           delivery_address?: string
           delivery_phone?: string
+          delivery_status?: string | null
           id?: string
           notes?: string | null
           status?: string
@@ -329,6 +335,51 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      product_reviews: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          rating: number
+          review_text: string | null
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          rating: number
+          review_text?: string | null
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          rating?: number
+          review_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -550,6 +601,7 @@ export type Database = {
         }
         Returns: string
       }
+      get_product_rating: { Args: { product_uuid: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
