@@ -1,15 +1,17 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Sprout, Menu, X, LogOut, User } from "lucide-react";
+import { Sprout, Menu, X, LogOut, User, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
 
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -61,6 +63,15 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/profile" className={isActive("/profile") ? "text-primary" : ""}>
                 <User className="h-4 w-4 mr-2" />
@@ -109,6 +120,17 @@ const Navigation = () => {
               <User className="h-4 w-4 inline mr-2" />
               Profile
             </Link>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="block w-full text-left py-2 text-sm font-medium transition-colors hover:text-primary"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 inline mr-2" />
+              ) : (
+                <Moon className="h-4 w-4 inline mr-2" />
+              )}
+              {theme === "dark" ? "Light" : "Dark"} Mode
+            </button>
             <button
               onClick={() => {
                 handleSignOut();
