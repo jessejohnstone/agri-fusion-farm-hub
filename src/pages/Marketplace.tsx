@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 interface Product {
   id: string;
@@ -21,6 +25,7 @@ interface Product {
   image_url: string | null;
   stock_quantity: number;
   available: boolean;
+  seller_id: string;
   rating?: number;
   review_count?: number;
 }
@@ -32,6 +37,18 @@ const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart, cartItems } = useCart();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [orderForm, setOrderForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    quantity: 1,
+    notes: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -83,6 +100,91 @@ const Marketplace = () => {
   });
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleBuyNow = (product: Product) => {
+    setSelectedProduct(product);
+    setOrderDialogOpen(true);
+    setOrderForm({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      quantity: 1,
+      notes: "",
+    });
+  };
+
+  const handleQuickOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedProduct) return;
+
+    setSubmitting(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to place an order",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const totalAmount = selectedProduct.price * orderForm.quantity;
+
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          buyer_id: user.id,
+          total_amount: totalAmount,
+          buyer_name: orderForm.name,
+          buyer_email: orderForm.email,
+          delivery_phone: orderForm.phone,
+          delivery_address: orderForm.address,
+          notes: orderForm.notes,
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order item
+      const { error: itemError } = await supabase
+        .from("order_items")
+        .insert({
+          order_id: order.id,
+          product_id: selectedProduct.id,
+          seller_id: selectedProduct.seller_id,
+          product_name: selectedProduct.name,
+          quantity: orderForm.quantity,
+          unit_price: selectedProduct.price,
+          subtotal: totalAmount,
+        });
+
+      if (itemError) throw itemError;
+
+      toast({
+        title: "Order placed successfully!",
+        description: "Your order has been received and is being processed",
+      });
+
+      setOrderDialogOpen(false);
+      setSelectedProduct(null);
+    } catch (error: any) {
+      toast({
+        title: "Error placing order",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -183,14 +285,24 @@ const Marketplace = () => {
                       </p>
                       <p className="text-sm text-muted-foreground mb-4">per {product.unit}</p>
                       {product.stock_quantity > 0 ? (
-                        <Button 
-                          variant="default" 
-                          className="w-full"
-                          onClick={() => addToCart(product.id)}
-                        >
-                          <ShoppingBag className="mr-2 h-4 w-4" />
-                          Add to Cart
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => addToCart(product.id)}
+                          >
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Add to Cart
+                          </Button>
+                          <Button 
+                            variant="default" 
+                            className="flex-1"
+                            onClick={() => handleBuyNow(product)}
+                          >
+                            <ShoppingBag className="mr-2 h-4 w-4" />
+                            Buy Now
+                          </Button>
+                        </div>
                       ) : (
                         <Button variant="outline" className="w-full" disabled>
                           Out of Stock
@@ -216,6 +328,95 @@ const Marketplace = () => {
           </div>
         </section>
       </main>
+
+      <Dialog open={orderDialogOpen} onOpenChange={setOrderDialogOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Quick Order</DialogTitle>
+            <DialogDescription>
+              Complete the form below to place your order for {selectedProduct?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleQuickOrder} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="order-name">Full Name *</Label>
+              <Input
+                id="order-name"
+                required
+                value={orderForm.name}
+                onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
+                placeholder="Enter your full name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="order-email">Email *</Label>
+              <Input
+                id="order-email"
+                type="email"
+                required
+                value={orderForm.email}
+                onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
+                placeholder="your@email.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="order-phone">Phone Number *</Label>
+              <Input
+                id="order-phone"
+                type="tel"
+                required
+                value={orderForm.phone}
+                onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                placeholder="+254..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="order-address">Delivery Address *</Label>
+              <Textarea
+                id="order-address"
+                required
+                value={orderForm.address}
+                onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
+                placeholder="Enter your delivery address"
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="order-quantity">Quantity *</Label>
+              <Input
+                id="order-quantity"
+                type="number"
+                min="1"
+                max={selectedProduct?.stock_quantity || 1}
+                required
+                value={orderForm.quantity}
+                onChange={(e) => setOrderForm({ ...orderForm, quantity: parseInt(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="order-notes">Additional Notes (Optional)</Label>
+              <Textarea
+                id="order-notes"
+                value={orderForm.notes}
+                onChange={(e) => setOrderForm({ ...orderForm, notes: e.target.value })}
+                placeholder="Any special instructions..."
+                rows={2}
+              />
+            </div>
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Total:</span>
+                <span className="text-primary">
+                  KSh {((selectedProduct?.price || 0) * orderForm.quantity).toLocaleString()}
+                </span>
+              </div>
+            </div>
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? "Processing..." : "Place Order"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
