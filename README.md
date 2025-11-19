@@ -1,58 +1,26 @@
-# Welcome to your Lovable project
+# Agri-Fusion Farm Hub
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/556f5411-469f-43e5-9c5e-1a36249cbb94
+This repository contains the Agri-Fusion Farm Hub frontend and serverless functions. Edit and run it locally using your preferred workflow.
 
 ## How can I edit this code?
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/556f5411-469f-43e5-9c5e-1a36249cbb94) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Use your preferred IDE. The basic steps to run locally are:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies (npm / yarn / bun)
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
 ## What technologies are used for this project?
-
-This project is built with:
 
 - Vite
 - TypeScript
@@ -62,12 +30,8 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/556f5411-469f-43e5-9c5e-1a36249cbb94) and click on Share -> Publish.
+Follow your preferred hosting provider's docs for deploying Vite + static sites, or run the included serverless functions from Supabase as needed.
 
-## Can I connect a custom domain to my Lovable project?
+## Custom domain
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+See your hosting provider docs for connecting a custom domain.

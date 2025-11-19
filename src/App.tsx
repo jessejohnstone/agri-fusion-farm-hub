@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -18,6 +19,7 @@ import FarmingCalendar from "./pages/FarmingCalendar";
 import VetServices from "./pages/VetServices";
 import Equipment from "./pages/Equipment";
 import EquipmentUpload from "./pages/EquipmentUpload";
+const BlogChain = React.lazy(() => import('./pages/BlogChain'));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,8 @@ const App = () => (
           <Route path="/vet-services" element={<ProtectedRoute><VetServices /></ProtectedRoute>} />
           <Route path="/equipment" element={<ProtectedRoute><Equipment /></ProtectedRoute>} />
           <Route path="/equipment-upload" element={<ProtectedRoute><EquipmentUpload /></ProtectedRoute>} />
+          
+          <Route path="/blogchain" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><BlogChain /></Suspense></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

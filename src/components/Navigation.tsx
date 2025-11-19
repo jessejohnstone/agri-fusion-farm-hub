@@ -31,6 +31,7 @@ const Navigation = () => {
     { path: "/marketplace", label: "Marketplace" },
     { path: "/community", label: "Community" },
     { path: "/blog", label: "Blog" },
+    { path: "/blogchain", label: "BlogChain" },
     { path: "/contact", label: "Contact" },
   ];
 

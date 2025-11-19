@@ -23,88 +23,55 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    // NOTE: Lovable AI integration removed.
+    // This function now requires the following environment variables to be set if you want
+    // to call an external AI service:
+    // - AI_API_ENDPOINT (the full URL for chat/completions)
+    // - AI_API_KEY (the bearer token)
+    // If those are not configured, return a helpful response so the caller can handle it.
+
+    const AI_API_ENDPOINT = Deno.env.get("AI_API_ENDPOINT");
+    const AI_API_KEY = Deno.env.get("AI_API_KEY");
+
+    if (!AI_API_ENDPOINT || !AI_API_KEY) {
+      console.warn("AI integration not configured: AI_API_ENDPOINT/AI_API_KEY missing");
+      return new Response(
+        JSON.stringify({ error: "AI integration not configured. Set AI_API_ENDPOINT and AI_API_KEY." }),
+        { status: 501, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    console.log("Analyzing crop image with AI...");
+    console.log("Forwarding request to configured AI endpoint...");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(AI_API_ENDPOINT, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert agricultural pathologist and plant disease specialist. Analyze crop images and provide:
-1. Disease/pest identification (name and scientific classification)
-2. Severity assessment (mild, moderate, severe)
-3. Immediate treatment recommendations
-4. Preventive measures
-5. Expected recovery time
-
-Be specific, actionable, and professional. If the image doesn't show clear disease symptoms, mention that and provide general health observations.`
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Please analyze this crop image for any diseases, pests, or health issues. Provide detailed diagnosis and treatment recommendations."
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: imageData
-                }
-              }
-            ]
-          }
-        ],
+        // Keep payload shape simple — adjust to match your AI provider's expected schema.
+        model: "default",
+        input: {
+          type: "image_analysis",
+          image_url: imageData,
+          instructions: "Analyze the crop image and return a diagnosis, severity, and recommendations."
+        }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error("AI API error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service unavailable. Please contact support." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      throw new Error(`AI API error: ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: `AI API error: ${response.status}` }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const data = await response.json();
-    const diagnosis = data.choices?.[0]?.message?.content;
-
-    if (!diagnosis) {
-      throw new Error("No diagnosis returned from AI");
-    }
-
-    console.log("Diagnosis generated successfully");
-
-    return new Response(
-      JSON.stringify({ diagnosis }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    // Pass-through the AI response as-is; frontend should handle parsing.
+    return new Response(JSON.stringify({ diagnosis: data }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     console.error("Error in diagnose-crop function:", error);
     return new Response(
