@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WeatherData {
   location: string;
@@ -39,25 +40,24 @@ const Weather = () => {
     return Sun;
   };
 
-  const fetchWeather = async (lat: number, lon: number) => {
+  const fetchWeather = async (lat?: number, lon?: number, locationName?: string) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Using OpenWeatherMap API (free tier)
-      const API_KEY = 'bd5e378503939ddaee76f12ad7a97608'; // Public demo key for testing
-      
-      // Fetch current weather
-      const currentResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-      );
-      const currentData = await currentResponse.json();
+      const { data, error } = await supabase.functions.invoke('fetch-weather', {
+        body: {
+          lat,
+          lon,
+          location: locationName,
+        },
+      });
 
-      // Fetch 5-day forecast
-      const forecastResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-      );
-      const forecastData = await forecastResponse.json();
+      if (error) {
+        throw new Error(error.message || 'Failed to fetch weather data');
+      }
+
+      const { current: currentData, forecast: forecastData } = data as any;
 
       setLocationName(currentData.name || "Current Location");
 
@@ -66,16 +66,16 @@ const Weather = () => {
         temp: Math.round(currentData.main.temp),
         condition: currentData.weather[0].main,
         humidity: currentData.main.humidity,
-        wind: Math.round(currentData.wind.speed * 3.6), // Convert m/s to km/h
+        wind: Math.round(currentData.wind.speed * 3.6),
         icon: currentData.weather[0].icon,
       });
 
-      // Process forecast data (get one forecast per day)
+      // Process forecast data
       const dailyForecasts: ForecastDay[] = [];
       const days = ['Today', 'Tomorrow', 'Day 3', 'Day 4', 'Day 5'];
       
       for (let i = 0; i < 5; i++) {
-        const index = i * 8; // Get data for every 24 hours (8 * 3-hour intervals)
+        const index = i * 8;
         if (forecastData.list[index]) {
           const item = forecastData.list[index];
           dailyForecasts.push({
@@ -98,6 +98,36 @@ const Weather = () => {
     }
   };
 
+  const fetchWeatherByLocation = async (locationName: string) => {
+    await fetchWeather(undefined, undefined, locationName);
+  };
+
+  const loadUserLocation = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("county, location")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        
+        if (profile && (profile.county || profile.location)) {
+          const locationToUse = profile.location || profile.county;
+          setLocationName(locationToUse);
+          await fetchWeatherByLocation(locationToUse);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Error loading user location:", error);
+    }
+    
+    // Fallback to geolocation or Nairobi
+    getCurrentLocation();
+  };
+
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -116,7 +146,7 @@ const Weather = () => {
   };
 
   useEffect(() => {
-    getCurrentLocation();
+    loadUserLocation();
   }, []);
 
   const farmingTips = [

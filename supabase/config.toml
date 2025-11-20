@@ -2,3 +2,6 @@ project_id = "nxdqfbddhblizfulscpr"
 
 [functions.diagnose-crop]
 verify_jwt = false
+
+[functions.fetch-weather]
+verify_jwt = false
