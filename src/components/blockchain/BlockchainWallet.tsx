@@ -1,31 +1,36 @@
-'use client';
-
-import React from 'react';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { connectWallet } from '@/integrations/blockchain/blogchain';
 
 export default function BlockchainWallet() {
-  const { address, isConnected } = useAccount();
-  const { connect, connectors, isLoading, pendingConnector } = useConnect({
-    connector: new InjectedConnector(),
-  });
-  const { disconnect } = useDisconnect();
+  const [address, setAddress] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleConnect = async () => {
+    setLoading(true);
+    try {
+      const addr = await connectWallet();
+      setAddress(addr);
+    } catch (e) {
+      console.error('Wallet connection failed:', e);
+    }
+    setLoading(false);
+  };
 
   return (
     <Card className="max-w-md mx-auto shadow-lg rounded-2xl">
-      {isConnected ? (
+      {address ? (
         <>
           <CardHeader>
             <CardTitle>Connected Wallet</CardTitle>
             <CardDescription>Your blockchain wallet is connected.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
-              Connected Address: {address?.slice(0, 6)}...{address?.slice(-4)}
+            <p className="text-sm text-muted-foreground mb-4">
+              Connected Address: {address.slice(0, 6)}...{address.slice(-4)}
             </p>
-            <Button variant="destructive" onClick={() => disconnect()}>
+            <Button variant="destructive" onClick={() => setAddress(null)}>
               Disconnect Wallet
             </Button>
           </CardContent>
@@ -39,12 +44,8 @@ export default function BlockchainWallet() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              onClick={() => connect()}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? 'Connecting...' : 'Connect Wallet'}
+            <Button onClick={handleConnect} disabled={loading} className="w-full">
+              {loading ? 'Connecting...' : 'Connect Wallet'}
             </Button>
           </CardContent>
         </>
