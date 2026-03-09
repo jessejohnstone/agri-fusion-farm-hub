@@ -27,9 +27,9 @@ export default function BlogChainPage() {
       if (!addr) throw new Error('Wallet connection required');
 
       // Register post hash on-chain (requires deployed contract)
-      const receipt = await blogchain.registerPostHash(hash);
+      await blogchain.registerPostHash(hash);
 
-      toast({ title: 'Anchored', description: `Transaction mined (txHash: ${receipt.transactionHash})` });
+      toast({ title: 'Anchored', description: 'Post hash registered successfully' });
       setTitle('');
       setContent('');
     } catch (err: any) {
