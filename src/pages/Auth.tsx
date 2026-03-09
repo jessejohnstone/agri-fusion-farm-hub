@@ -54,15 +54,16 @@ const Auth = () => {
     });
 
     if (!error && data.user) {
-      // Update profile with additional information
+      // Upsert profile with additional information
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ 
+        .upsert({ 
+          user_id: data.user.id,
           location: county,
+          county: county,
           phone: phone,
           full_name: fullName
-        })
-        .eq("user_id", data.user.id);
+        }, { onConflict: 'user_id' });
 
       if (profileError) {
         console.error("Profile update error:", profileError);
