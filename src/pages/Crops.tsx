@@ -5,6 +5,10 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import maizeImg from "@/assets/crop-maize.jpg";
 import wheatImg from "@/assets/crop-wheat.jpg";
+import beansImg from "@/assets/crop-beans.jpg";
+import vegetablesImg from "@/assets/crop-vegetables.jpg";
+import riceImg from "@/assets/crop-rice.jpg";
+import sorghumImg from "@/assets/crop-sorghum.jpg";
 
 const Crops = () => {
   const crops = [
@@ -24,17 +28,31 @@ const Crops = () => {
     },
     {
       name: "Beans",
-      image: maizeImg,
+      image: beansImg,
       description: "Protein-rich legumes that improve soil nitrogen",
       growthTips: "Easy to grow. Direct sow after frost. Needs support for climbing varieties.",
       season: "Spring/Summer",
     },
     {
       name: "Vegetables",
-      image: wheatImg,
+      image: vegetablesImg,
       description: "Fresh seasonal vegetables including tomatoes, peppers, and greens",
       growthTips: "Rotate crops annually. Use mulch for moisture retention.",
       season: "Year-round",
+    },
+    {
+      name: "Rice",
+      image: riceImg,
+      description: "Irrigated and rain-fed rice varieties for paddy farming",
+      growthTips: "Needs flooded fields or consistent moisture. Thrives in warm, humid climates.",
+      season: "Spring/Summer",
+    },
+    {
+      name: "Sorghum",
+      image: sorghumImg,
+      description: "Drought-tolerant grain ideal for arid and semi-arid regions",
+      growthTips: "Very heat and drought resistant. Plant in warm soil. Low maintenance crop.",
+      season: "Spring/Summer",
     },
   ];
 
